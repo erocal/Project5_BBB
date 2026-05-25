@@ -54,6 +54,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _OutlineWidth: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
