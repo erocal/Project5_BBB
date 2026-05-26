@@ -53,6 +53,22 @@ public class BallManager : MonoBehaviour
         rb.velocity = currentDirection * finalSpeed;
     }
 
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (!isLaunched) return;
+
+        if (((1 << collider.gameObject.layer) & bounceLayer) == 0)
+            return;
+
+        EnvironmentObject hitObject = collider.gameObject.GetComponent<EnvironmentObject>();
+
+        if (hitObject != null)
+        {
+            hitObject.TakeHit(this.gameObject);
+        }
+
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (!isLaunched) return;
@@ -66,7 +82,7 @@ public class BallManager : MonoBehaviour
 
         if (hitObject != null)
         {
-            hitObject.TakeHit();
+            hitObject.TakeHit(this.gameObject);
         }
 
     }

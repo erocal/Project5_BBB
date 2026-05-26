@@ -17,9 +17,9 @@ public class WallManager : EnvironmentObject
 
     }
 
-    protected override void OnHit()
+    protected override void OnHit(GameObject hitObject)
     {
-        base.OnHit();
+        base.OnHit(hitObject);
 
 
     }

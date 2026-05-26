@@ -5,14 +5,14 @@ public class EnvironmentObject : MonoBehaviour
 
     protected AudioSource audioSource;
 
-    public virtual void TakeHit()
+    public virtual void TakeHit(GameObject hitObject)
     {
 
-        OnHit();
+        OnHit(hitObject);
 
     }
 
-    protected virtual void OnHit()
+    protected virtual void OnHit(GameObject hitObject)
     {
 
         audioSource?.Stop();
