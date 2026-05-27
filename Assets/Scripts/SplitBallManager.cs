@@ -5,7 +5,6 @@ public class SplitBallManager : EnvironmentObject
 {
 
     [Header("Split Ball")]
-    [SerializeField] private GameObject ballPrefab;
     [SerializeField] private GameObject SplitBallVFX;
 
     [SerializeField] private float splitAngle = 30f;
@@ -58,12 +57,6 @@ public class SplitBallManager : EnvironmentObject
             return;
         }
 
-        if (ballPrefab == null)
-        {
-            Debug.LogWarning($"{name} 沒有設定 ballPrefab");
-            return;
-        }
-
         Vector3 originalVelocity = originalBallRb.velocity;
 
         if (originalVelocity.sqrMagnitude <= 0.01f)
@@ -85,7 +78,7 @@ public class SplitBallManager : EnvironmentObject
     {
         Vector3 spawnPosition = centerPosition + direction.normalized * spawnOffset;
 
-        GameObject ball = ballPrefab.Reuse(spawnPosition, Quaternion.LookRotation(direction.normalized));
+        GameObject ball = BallSpawner.Instance.Reuse(spawnPosition, Quaternion.LookRotation(direction.normalized));
 
         ball.GetComponent<BallManager>().Launch(direction, speed);
 

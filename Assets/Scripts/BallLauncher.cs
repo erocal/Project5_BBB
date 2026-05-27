@@ -3,8 +3,6 @@ using UnityEngine.InputSystem;
 
 public class BallLauncher : MonoBehaviour
 {
-    [Header("Ball Prefab")]
-    [SerializeField] private BallManager ballPrefab;
 
     [Header("Spawn Settings")]
     [SerializeField] private Transform spawnPoint;
@@ -17,11 +15,11 @@ public class BallLauncher : MonoBehaviour
     [SerializeField] private float randomHorizontalAngleRange = 60f;
 
     [Header("XR Input")]
-    [Tooltip("建議拖 XRI RightHand Interaction / Activate，通常是 Trigger。")]
-    [SerializeField] private InputActionReference activateAction;
+    [Tooltip("建議拖 XRI LeftHand Interaction / Activate，通常是 Trigger。")]
+    [SerializeField] private InputActionReference leftHandActivateAction;
 
-    [Tooltip("建議拖 XRI RightHand Interaction / Select，通常是 Grip。")]
-    [SerializeField] private InputActionReference selectAction;
+    [Tooltip("建議拖 XRI RightHand Interaction / Activate，通常是 Trigger。")]
+    [SerializeField] private InputActionReference rightHandActivateAction;
 
     private BallManager currentBall;
 
@@ -35,51 +33,46 @@ public class BallLauncher : MonoBehaviour
 
     private void OnEnable()
     {
-        if (activateAction != null)
+        if (rightHandActivateAction != null)
         {
-            activateAction.action.Enable();
-            activateAction.action.performed += OnActivatePerformed;
+            rightHandActivateAction.action.Enable();
+            rightHandActivateAction.action.performed += OnRightHandActivatePerformed;
         }
 
-        if (selectAction != null)
+        if (leftHandActivateAction != null)
         {
-            selectAction.action.Enable();
-            selectAction.action.performed += OnSelectPerformed;
+            leftHandActivateAction.action.Enable();
+            leftHandActivateAction.action.performed += OnLeftHandActivatePerformed;
         }
     }
 
     private void OnDisable()
     {
-        if (activateAction != null)
+        if (rightHandActivateAction != null)
         {
-            activateAction.action.performed -= OnActivatePerformed;
-            activateAction.action.Disable();
+            rightHandActivateAction.action.performed -= OnRightHandActivatePerformed;
+            rightHandActivateAction.action.Disable();
         }
 
-        if (selectAction != null)
+        if (leftHandActivateAction != null)
         {
-            selectAction.action.performed -= OnSelectPerformed;
-            selectAction.action.Disable();
+            leftHandActivateAction.action.performed -= OnLeftHandActivatePerformed;
+            leftHandActivateAction.action.Disable();
         }
     }
 
-    private void OnActivatePerformed(InputAction.CallbackContext context)
+    private void OnRightHandActivatePerformed(InputAction.CallbackContext context)
     {
         LaunchCurrentBall();
     }
 
-    private void OnSelectPerformed(InputAction.CallbackContext context)
+    private void OnLeftHandActivatePerformed(InputAction.CallbackContext context)
     {
         SpawnBall();
     }
 
     public void SpawnBall()
     {
-        if (ballPrefab == null)
-        {
-            Debug.LogWarning("BBBBallLauncher: 尚未指定 ballPrefab。");
-            return;
-        }
 
         if (destroyOldBallWhenSpawnNew && currentBall != null)
         {
@@ -87,11 +80,7 @@ public class BallLauncher : MonoBehaviour
             currentBall = null;
         }
 
-        currentBall = Instantiate(
-            ballPrefab,
-            spawnPoint.position,
-            spawnPoint.rotation
-        );
+        currentBall = BallSpawner.Instance.Reuse(spawnPoint.position, spawnPoint.rotation).GetComponent<BallManager>();
 
         currentBall.StopBall();
     }
