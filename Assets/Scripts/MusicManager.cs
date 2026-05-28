@@ -7,6 +7,7 @@ public class MusicManager : MonoBehaviour
 
     [Header("Audio")]
     [SerializeField] private AudioSource brickAudioSource;
+    [SerializeField] private AudioSource itemGetAudioSource;
 
     private void Awake()
     {
@@ -28,6 +29,12 @@ public class MusicManager : MonoBehaviour
     {
         brickAudioSource.Stop();
         brickAudioSource.Play();
+    }
+
+    public void PlayItemGetAudio()
+    {
+        itemGetAudioSource.Stop();
+        itemGetAudioSource.Play();
     }
 
 }

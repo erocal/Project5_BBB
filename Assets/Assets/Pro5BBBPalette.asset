@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0b6ecb475b6deb4296b71f8c9fef356, type: 3}
+  m_Name: Pro5BBBPalette
+  m_EditorClassIdentifier: 
+  items:
+  - name: BlueBrick
+    id: 1
+    color: {r: 0.30588236, g: 0.6784314, b: 0.9960785, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: 51b0f22e38bc2ce41af28cecd9883c31, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: BlueBrick2
+    id: 2
+    color: {r: 0.30588236, g: 0.6784314, b: 0.9960785, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: 99acdbd8eeaec8d42bdf1a82d9f733c9, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: GreenBrick
+    id: 3
+    color: {r: 0.36862746, g: 0.9960785, b: 0.454902, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: 69bd7e809fb08504f8d478f80f07a018, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: GreenBrick2
+    id: 4
+    color: {r: 0.36862746, g: 0.9960785, b: 0.454902, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: cef5d2f161988d7478802600065be8fc, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: RedBrick
+    id: 5
+    color: {r: 0.9960785, g: 0.32941177, b: 0.36862746, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: 8b8af75d6b636ad4489f820fddae8e87, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: RedBrick2
+    id: 6
+    color: {r: 0.9960785, g: 0.32941177, b: 0.36862746, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: bacb7f2eae301b5479b9e3fea05ffba3, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: YellowBrick
+    id: 7
+    color: {r: 0.9960785, g: 0.882353, b: 0.32156864, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: a2b90a8350013b04282b6a2d0da1f6c4, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: YellowBrick2
+    id: 8
+    color: {r: 0.9960785, g: 0.882353, b: 0.32156864, a: 1}
+    prefab: {fileID: 3532418589844893395, guid: e2050660f64fc78459c1df5eeeaaf55e, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}
+  - name: SplitBall
+    id: 9
+    color: {r: 0.59607846, g: 0.25490198, b: 0.8352942, a: 1}
+    prefab: {fileID: 3855375599848890757, guid: 59a8f3e3c94b48a42baea0c0e32a7e59, type: 3}
+    offset2D: {x: 0, y: 0, z: 0}
+    offset3D: {x: 0, y: 0, z: 0}

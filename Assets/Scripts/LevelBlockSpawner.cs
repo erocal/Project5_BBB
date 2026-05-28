@@ -1,194 +1,71 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using ThirdPixelGames.LevelBuilder;
 using UnityEngine;
-using ToolBox.Pools;
-using DG.Tweening;
 
 public class LevelBlockSpawner : MonoBehaviour
 {
-    [Header("方塊 Prefab，請放入紅、藍、黃、綠等物件池 Prefab")]
-    [SerializeField] private List<GameObject> blockPrefabs = new List<GameObject>();
+    [Header("所有可載入的關卡")]
+    [Tooltip("A list of all levels that can be loaded")]
+    [SerializeField] private List<LevelIndexItem> allLevel;
 
-    [Header("生成中心點")]
-    [SerializeField] private Vector3 centerPosition = new Vector3(0f, 1f, 15f);
+    [Header("目前生成的關卡")]
+    [HideInInspector] public Level curLevel;
 
-    [Header("方塊群尺寸：X * Y * Z")]
-    [SerializeField] private Vector3Int gridSize = new Vector3Int(6, 12, 5);
+    [Header("關卡生成父物件")]
+    [Tooltip("LevelLoader 生成出來的所有物件都會放到這個 Transform 底下")]
+    [SerializeField] private Transform parentTransform;
 
-    [Header("方塊間距")]
-    [SerializeField] private Vector3 spacing = new Vector3(1.1f, 1.1f, 1.1f);
-
-    [Header("是否在 Start 自動生成")]
-    [SerializeField] private bool generateOnStart = true;
-
-    [Header("DOTween 生成推進動畫")]
-    [SerializeField] private bool useSpawnMoveAnimation = true;
-
-    [Tooltip("方塊會先生成在目標點 Z 軸再多這個距離的位置，再推進到目標點")]
-    [SerializeField] private float spawnForwardOffsetZ = 5f;
-
-    [SerializeField] private float spawnMoveDuration = 0.6f;
-
-    [SerializeField] private Ease spawnMoveEase = Ease.OutBack;
-
-    [Header("是否讓每顆方塊有一點點延遲，做出波浪推進感")]
-    [SerializeField] private bool useStaggerDelay = true;
-
-    [SerializeField] private float staggerDelayPerZLayer = 0.04f;
-
-    private readonly List<GameObject> spawnedBlocks = new List<GameObject>();
+    [Header("關卡左下角對齊的位置")]
+    [SerializeField] private Vector3 targetBottomLeftPoint;
 
     private void Awake()
     {
-        
+        LoadCurrentLevel();
     }
 
-    private void Start()
+    public void LoadCurrentLevel()
     {
-        if (generateOnStart)
-        {
-            GenerateBlocks();
-        }
-    }
+        int targetLevelId = GetLevelId(1);
 
-    [ContextMenu("Generate Blocks")]
-    public void GenerateBlocks()
-    {
-        if (blockPrefabs == null || blockPrefabs.Count == 0)
+        LevelIndexItem levelItem = allLevel.FirstOrDefault(fd => fd.id == targetLevelId);
+
+        if (levelItem.level == null)
         {
-            Debug.LogWarning("[LevelBlockSpawner] 尚未指定任何方塊 Prefab。");
+            Debug.LogError($"[LevelBlockSpawner] 找不到 Level ID：{targetLevelId}，或該 Level 尚未設定。");
             return;
         }
 
-        ClearSpawnedBlocks();
-
-        for (int x = 0; x < gridSize.x; x++)
+        if (parentTransform == null)
         {
-            for (int y = 0; y < gridSize.y; y++)
-            {
-                for (int z = 0; z < gridSize.z; z++)
-                {
-                    Vector3 targetPosition = GetCenteredPosition(x, y, z);
-
-                    GameObject selectedPrefab = GetRandomBlockPrefab();
-                    if (selectedPrefab == null)
-                        continue;
-
-                    Vector3 startPosition = targetPosition;
-
-                    if (useSpawnMoveAnimation)
-                    {
-                        startPosition += new Vector3(0f, 0f, spawnForwardOffsetZ);
-                    }
-
-                    GameObject block = selectedPrefab.Reuse(startPosition, Quaternion.identity);
-                    block.transform.SetParent(transform);
-
-                    spawnedBlocks.Add(block);
-
-                    if (useSpawnMoveAnimation)
-                    {
-                        PlaySpawnMoveAnimation(block, targetPosition, z);
-                    }
-                }
-            }
-        }
-    }
-
-    [ContextMenu("Clear Spawned Blocks")]
-    public void ClearSpawnedBlocks()
-    {
-        for (int i = spawnedBlocks.Count - 1; i >= 0; i--)
-        {
-            if (spawnedBlocks[i] != null)
-            {
-                spawnedBlocks[i].transform.DOKill();
-                spawnedBlocks[i].Release();
-            }
+            Debug.LogError("[LevelBlockSpawner] 尚未指定 parentTransform。");
+            return;
         }
 
-        spawnedBlocks.Clear();
-    }
-
-    private void PlaySpawnMoveAnimation(GameObject block, Vector3 targetPosition, int zIndex)
-    {
-        block.transform.DOKill();
-
-        float delay = 0f;
-
-        if (useStaggerDelay)
+        if (targetBottomLeftPoint == null)
         {
-            delay = zIndex * staggerDelayPerZLayer;
+            Debug.LogError("[LevelBlockSpawner] 尚未指定 targetBottomLeftPoint。");
+            return;
         }
 
-        block.transform
-            .DOMove(targetPosition, spawnMoveDuration)
-            .SetDelay(delay)
-            .SetEase(spawnMoveEase);
+        curLevel = levelItem.level;
+
+        LevelLoader.LoadLevel(curLevel, parentTransform);
+
+        parentTransform.position = targetBottomLeftPoint;
     }
 
-    private Vector3 GetCenteredPosition(int x, int y, int z)
+    private int GetLevelId(int id)
     {
-        float xOffset = GetCenteredAxisOffset(x, gridSize.x, spacing.x, 0f);
-        float yOffset = GetCenteredAxisOffset(y, gridSize.y, spacing.y, 0f);
-        float zOffset = GetCenteredAxisOffset(z, gridSize.z, spacing.z, 0f);
-
-        return centerPosition + new Vector3(xOffset, yOffset, zOffset);
+        return PlayerPrefs.GetInt("Level", id);
     }
 
-    private float GetCenteredAxisOffset(int index, int count, float axisSpacing, float centerGap)
+    private void OnDrawGizmos()
     {
-        float offset = (index - (count - 1) * 0.5f) * axisSpacing;
-
-        if (centerGap > 0f)
-        {
-            if (offset < 0f)
-                offset -= centerGap * 0.5f;
-            else if (offset > 0f)
-                offset += centerGap * 0.5f;
-        }
-
-        return offset;
-    }
-
-    private GameObject GetRandomBlockPrefab()
-    {
-        List<GameObject> validPrefabs = new List<GameObject>();
-
-        foreach (GameObject prefab in blockPrefabs)
-        {
-            if (prefab != null)
-                validPrefabs.Add(prefab);
-        }
-
-        if (validPrefabs.Count == 0)
-            return null;
-
-        int randomIndex = Random.Range(0, validPrefabs.Count);
-        return validPrefabs[randomIndex];
-    }
-
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(
-            centerPosition,
-            new Vector3(
-                (gridSize.x - 1) * spacing.x,
-                (gridSize.y - 1) * spacing.y,
-                (gridSize.z - 1) * spacing.z
-            )
-        );
-
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireCube(
-            centerPosition + new Vector3(0f, 0f, spawnForwardOffsetZ),
-            new Vector3(
-                (gridSize.x - 1) * spacing.x,
-                (gridSize.y - 1) * spacing.y,
-                (gridSize.z - 1) * spacing.z
-            )
-        );
+
+        Gizmos.DrawSphere(targetBottomLeftPoint, 0.2f);
+
     }
-#endif
+
 }

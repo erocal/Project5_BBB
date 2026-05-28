@@ -14,13 +14,6 @@ public class SplitBallManager : EnvironmentObject
 
     private float cooldownTimer = 0f;
 
-    void Awake()
-    {
-
-        audioSource = GetComponent<AudioSource>();
-
-    }
-
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -41,6 +34,8 @@ public class SplitBallManager : EnvironmentObject
         SplitBall(hitObject);
 
         cooldownTimer = 0f;
+
+        MusicManager.Instance.PlayItemGetAudio();
 
     }
 
