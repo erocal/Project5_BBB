@@ -9,6 +9,8 @@ public class BrickManager : EnvironmentObject
     // Start is called before the first frame update
     void Awake()
     {
+
+        LevelCounter.Instance?.AddBrick();
         
     }
 
@@ -24,6 +26,8 @@ public class BrickManager : EnvironmentObject
         base.OnHit(hitObject);
 
         MusicManager.Instance.PlayBrickAudio();
+
+        LevelCounter.Instance.RemoveBrick();
 
         this.gameObject.Release();
 

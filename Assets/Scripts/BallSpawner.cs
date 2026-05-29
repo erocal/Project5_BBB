@@ -26,7 +26,7 @@ public class BallSpawner : MonoBehaviour
         // ´«³õ´º¤£¾P·´
         DontDestroyOnLoad(gameObject);
 
-        Reuse(spawnPos, Quaternion.identity);
+        //Reuse(spawnPos, Quaternion.identity);
 
     }
 

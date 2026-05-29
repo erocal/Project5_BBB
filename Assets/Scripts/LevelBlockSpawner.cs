@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening;
+using System.Collections.Generic;
 using System.Linq;
 using ThirdPixelGames.LevelBuilder;
 using UnityEngine;
@@ -18,6 +19,13 @@ public class LevelBlockSpawner : MonoBehaviour
 
     [Header("關卡左下角對齊的位置")]
     [SerializeField] private Vector3 targetBottomLeftPoint;
+
+    [Header("關卡沉降動畫")]
+    [SerializeField] private float dropHeight = 5f;
+    [SerializeField] private float dropDuration = 1.2f;
+    [SerializeField] private Ease dropEase = Ease.OutCubic;
+
+    private Tween dropTween;
 
     private void Awake()
     {
@@ -52,7 +60,20 @@ public class LevelBlockSpawner : MonoBehaviour
 
         LevelLoader.LoadLevel(curLevel, parentTransform);
 
-        parentTransform.position = targetBottomLeftPoint;
+        PlayDropAnimation();
+    }
+
+    private void PlayDropAnimation()
+    {
+        dropTween?.Kill();
+
+        Vector3 startPosition = targetBottomLeftPoint + Vector3.up * dropHeight;
+
+        parentTransform.position = startPosition;
+
+        dropTween = parentTransform
+            .DOMove(targetBottomLeftPoint, dropDuration)
+            .SetEase(dropEase);
     }
 
     private int GetLevelId(int id)
@@ -63,9 +84,20 @@ public class LevelBlockSpawner : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-
         Gizmos.DrawSphere(targetBottomLeftPoint, 0.2f);
 
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawSphere(targetBottomLeftPoint + Vector3.up * dropHeight, 0.2f);
+
+        Gizmos.DrawLine(
+            targetBottomLeftPoint + Vector3.up * dropHeight,
+            targetBottomLeftPoint
+        );
+    }
+
+    private void OnDestroy()
+    {
+        dropTween?.Kill();
     }
 
 }

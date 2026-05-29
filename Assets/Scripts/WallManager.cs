@@ -8,7 +8,6 @@ public class WallManager : EnvironmentObject
     // Start is called before the first frame update
     void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -20,7 +19,7 @@ public class WallManager : EnvironmentObject
     protected override void OnHit(GameObject hitObject)
     {
         base.OnHit(hitObject);
-
+        MusicManager.Instance.PlayWallAudio();
 
     }
 

@@ -158,7 +158,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minSpeed: 8
-  maxSpeed: 18
+  maxSpeed: 12
   bounceEnergy: 1
   bounceLayer:
     serializedVersion: 2
