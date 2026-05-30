@@ -17,6 +17,10 @@ public class BallSpawner : MonoBehaviour
 
     public event Action<LevelState> OnStateChanged;
 
+    [Header("球生成父物件")]
+    [Tooltip("生成出來的球都會放到這個 Transform 底下")]
+    [SerializeField] private Transform parentTransform;
+
     private void Awake()
     {
         
@@ -77,7 +81,7 @@ public class BallSpawner : MonoBehaviour
 
     public GameObject Reuse(Vector3 position, Quaternion rotation)
     {
-        curBall = ballPrefab.Reuse(position, rotation);
+        curBall = ballPrefab.Reuse(position, rotation, parentTransform);
         curBall.GetComponent<BallManager>().StopBall();
 
         return curBall;

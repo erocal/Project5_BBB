@@ -40,7 +40,7 @@ public class LevelStatus : MonoBehaviour
         {
             if (LevelCounter.Instance.CurBallCount == 0)
                 SetState(LevelState.Failed);
-            if (LevelCounter.Instance.CurBrickCount == 0)
+            else if (LevelCounter.Instance.CurBrickCount == 0)
                 SetState(LevelState.Cleared);
         }
 
