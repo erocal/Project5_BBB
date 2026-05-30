@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using ToolBox.Pools;
 using UnityEngine;
-using UnityEngine.UIElements;
+using static LevelStatus;
 
 public class BallSpawner : MonoBehaviour
 {
@@ -12,9 +11,15 @@ public class BallSpawner : MonoBehaviour
 
     [SerializeField] private Vector3 spawnPos;
 
+    [SerializeField] private GameObject curBall;
+
+    public GameObject CurBall => curBall;
+
+    public event Action<LevelState> OnStateChanged;
+
     private void Awake()
     {
-        // 單例：如果已經有 MusicManager，就刪掉新的
+        
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -26,8 +31,6 @@ public class BallSpawner : MonoBehaviour
         // 換場景不銷毀
         DontDestroyOnLoad(gameObject);
 
-        //Reuse(spawnPos, Quaternion.identity);
-
     }
 
     // Update is called once per frame
@@ -36,9 +39,48 @@ public class BallSpawner : MonoBehaviour
         
     }
 
+    private void OnEnable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged += BallSpawnerHandleLevelStateChanged;
+
+    }
+
+    private void BallSpawnerHandleLevelStateChanged(LevelStatus.LevelState state)
+    {
+        switch (state)
+        {
+            case LevelStatus.LevelState.Loading:
+                break;
+
+            case LevelStatus.LevelState.Ready:
+                Reuse(spawnPos, Quaternion.identity);
+                break;
+
+            case LevelStatus.LevelState.Playing:
+
+                break;
+
+            case LevelStatus.LevelState.Cleared:
+
+                break;
+
+            case LevelStatus.LevelState.Failed:
+                curBall = null;
+
+                break;
+        }
+    }
+
     public GameObject Reuse(Vector3 position, Quaternion rotation)
     {
-        return ballPrefab.Reuse(position, rotation);
+        curBall = ballPrefab.Reuse(position, rotation);
+        curBall.GetComponent<BallManager>().StopBall();
+
+        return curBall;
     }
 
     private void OnDrawGizmos()
@@ -47,6 +89,16 @@ public class BallSpawner : MonoBehaviour
 
         // 如果 spawnPos 是世界座標
         Gizmos.DrawSphere(spawnPos, 0.2f);
+
+    }
+
+    private void OnDisable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged -= BallSpawnerHandleLevelStateChanged;
 
     }
 

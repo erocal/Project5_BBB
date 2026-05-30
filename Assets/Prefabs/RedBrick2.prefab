@@ -44,8 +44,8 @@ GameObject:
   - component: {fileID: 6592058172758390997}
   - component: {fileID: 9148645232068987869}
   - component: {fileID: 8609062239083723156}
-  - component: {fileID: 3156686471662071512}
   - component: {fileID: 4157856584787914483}
+  - component: {fileID: 8729714102291208305}
   m_Layer: 6
   m_Name: RedBrick2
   m_TagString: Untagged
@@ -118,18 +118,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3156686471662071512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4536175874518749740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 496942e5f76ead34fa71c68cf5b9fa1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!64 &4157856584787914483
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -152,6 +140,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -8110733170943883408, guid: 6692280e6247e604f853bc432c1a7f8f, type: 3}
+--- !u!114 &8729714102291208305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4536175874518749740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 496942e5f76ead34fa71c68cf5b9fa1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  releaseGameObject: {fileID: 3532418589844893395}
 --- !u!1 &5711371508079913015
 GameObject:
   m_ObjectHideFlags: 0

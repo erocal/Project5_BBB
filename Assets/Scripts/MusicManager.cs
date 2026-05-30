@@ -9,7 +9,7 @@ public class MusicManager : MonoBehaviour
     [SerializeField] private AudioSource brickAudioSource;
     [SerializeField] private AudioSource wallAudioSource;
     [SerializeField] private AudioSource itemGetAudioSource;
-    [SerializeField] private AudioSource levelUpAudioSource;
+    [SerializeField] private AudioSource levelClearAudioSource;
 
     private void Awake()
     {
@@ -24,6 +24,44 @@ public class MusicManager : MonoBehaviour
 
         // ´«³õ´º¤£¾P·´
         DontDestroyOnLoad(gameObject);
+
+    }
+
+    private void OnEnable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged += MusicManagerHandleLevelStateChanged;
+
+    }
+
+    private void MusicManagerHandleLevelStateChanged(LevelStatus.LevelState state)
+    {
+
+        switch (state)
+        {
+            case LevelStatus.LevelState.Loading:
+                
+                break;
+
+            case LevelStatus.LevelState.Ready:
+
+                break;
+
+            case LevelStatus.LevelState.Playing:
+
+                break;
+
+            case LevelStatus.LevelState.Cleared:
+                PlayLevelClearAudio();
+                break;
+
+            case LevelStatus.LevelState.Failed:
+
+                break;
+        }
 
     }
 
@@ -45,9 +83,19 @@ public class MusicManager : MonoBehaviour
         itemGetAudioSource.Play();
     }
 
-    public void PlayLevelUpAudio()
+    public void PlayLevelClearAudio()
     {
-        levelUpAudioSource.Play();
+        levelClearAudioSource.Play();
+    }
+
+    private void OnDisable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged -= MusicManagerHandleLevelStateChanged;
+
     }
 
 }

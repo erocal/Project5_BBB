@@ -27,16 +27,55 @@ public class LevelBlockSpawner : MonoBehaviour
 
     private Tween dropTween;
 
-    private void Awake()
+    private void Start()
     {
-        LoadCurrentLevel();
+
+        LoadCurrentLevel(1);
     }
 
-    public void LoadCurrentLevel()
+    private void OnEnable()
     {
-        int targetLevelId = GetLevelId(1);
 
-        LevelIndexItem levelItem = allLevel.FirstOrDefault(fd => fd.id == targetLevelId);
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged += LevelBlockSpawnerHandleLevelStateChanged;
+
+    }
+
+    private void LevelBlockSpawnerHandleLevelStateChanged(LevelStatus.LevelState state)
+    {
+        switch (state)
+        {
+            case LevelStatus.LevelState.Loading:
+                LoadCurrentLevel(1);
+                break;
+
+            case LevelStatus.LevelState.Ready:
+                
+                break;
+
+            case LevelStatus.LevelState.Playing:
+                
+                break;
+
+            case LevelStatus.LevelState.Cleared:
+                
+                break;
+
+            case LevelStatus.LevelState.Failed:
+
+                LevelCounter.Instance.ResetBallCount();
+                LevelCounter.Instance.ResetBrickCount();
+
+                break;
+        }
+    }
+
+    public void LoadCurrentLevel(int targetLevelId)
+    {
+
+        LevelIndexItem levelItem = allLevel.FirstOrDefault(fd => fd.id == GetLevelId(targetLevelId));
 
         if (levelItem.level == null)
         {
@@ -58,9 +97,14 @@ public class LevelBlockSpawner : MonoBehaviour
 
         curLevel = levelItem.level;
 
+        parentTransform.position = Vector3.zero;
+
         LevelLoader.LoadLevel(curLevel, parentTransform);
 
         PlayDropAnimation();
+
+        LevelStatus.Instance.SetState(LevelStatus.LevelState.Ready);
+
     }
 
     private void PlayDropAnimation()
@@ -98,6 +142,16 @@ public class LevelBlockSpawner : MonoBehaviour
     private void OnDestroy()
     {
         dropTween?.Kill();
+    }
+
+    private void OnDisable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged -= LevelBlockSpawnerHandleLevelStateChanged;
+
     }
 
 }

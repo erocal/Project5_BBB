@@ -25,6 +25,8 @@ public class DeathWallManager : EnvironmentObject
 
         hitObject.Release();
 
+        LevelCounter.Instance.RemoveBall();
+
     }
 
 }

@@ -21,8 +21,6 @@ public class BallLauncher : MonoBehaviour
     [Tooltip("建議拖 XRI RightHand Interaction / Activate，通常是 Trigger。")]
     [SerializeField] private InputActionReference rightHandActivateAction;
 
-    private BallManager currentBall;
-
     private void Awake()
     {
         if (spawnPoint == null)
@@ -68,33 +66,26 @@ public class BallLauncher : MonoBehaviour
 
     private void OnLeftHandActivatePerformed(InputAction.CallbackContext context)
     {
-        SpawnBall();
-    }
-
-    public void SpawnBall()
-    {
-
-        if (destroyOldBallWhenSpawnNew && currentBall != null)
-        {
-            Destroy(currentBall.gameObject);
-            currentBall = null;
-        }
-
-        currentBall = BallSpawner.Instance.Reuse(spawnPoint.position, spawnPoint.rotation).GetComponent<BallManager>();
-
-        currentBall.StopBall();
+        
     }
 
     public void LaunchCurrentBall()
     {
-        if (currentBall == null)
+
+        if (BallSpawner.Instance.CurBall == null)
         {
             Debug.LogWarning("BBBBallLauncher: 場上目前沒有球，請先按 Grip / Select 生成球。");
             return;
         }
 
         Vector3 launchDirection = GetRandomHorizontalForwardDirection();
-        currentBall.Launch(launchDirection, launchSpeed);
+
+
+        BallSpawner.Instance.CurBall.GetComponent<BallManager>().Launch(launchDirection, launchSpeed);
+
+        if (LevelStatus.Instance != null)
+            LevelStatus.Instance.SetState(LevelStatus.LevelState.Playing);
+
     }
 
     private Vector3 GetRandomHorizontalForwardDirection()

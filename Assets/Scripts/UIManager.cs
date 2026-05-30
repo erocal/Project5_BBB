@@ -1,38 +1,40 @@
+using System.Collections;
+using System.Collections.Generic;
 using ToolBox.Pools;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class BrickManager : EnvironmentObject
+public class UIManager : MonoBehaviour
 {
 
-    [SerializeField] GameObject releaseGameObject;
+    [SerializeField] private Button replayButton;
 
     // Start is called before the first frame update
-    void Awake()
+    void Start()
     {
-
-        
         
     }
 
     private void OnEnable()
     {
 
-        LevelCounter.Instance?.AddBrick();
-
         if (LevelStatus.Instance == null)
             return;
 
-        LevelStatus.Instance.OnStateChanged += BrickManagerHandleLevelStateChanged;
+        LevelStatus.Instance.OnStateChanged += UIManagerHandleLevelStateChanged;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+        replayButton.interactable = LevelStatus.Instance.IsState(LevelStatus.LevelState.Failed);
+
+
     }
 
-    private void BrickManagerHandleLevelStateChanged(LevelStatus.LevelState state)
+    private void UIManagerHandleLevelStateChanged(LevelStatus.LevelState state)
     {
         switch (state)
         {
@@ -54,23 +56,8 @@ public class BrickManager : EnvironmentObject
 
             case LevelStatus.LevelState.Failed:
 
-                releaseGameObject.Release();
-
                 break;
         }
-    }
-
-    protected override void OnHit(GameObject hitObject)
-    {
-
-        base.OnHit(hitObject);
-
-        MusicManager.Instance.PlayBrickAudio();
-
-        LevelCounter.Instance.RemoveBrick();
-
-        releaseGameObject.Release();
-
     }
 
     private void OnDisable()
@@ -79,7 +66,7 @@ public class BrickManager : EnvironmentObject
         if (LevelStatus.Instance == null)
             return;
 
-        LevelStatus.Instance.OnStateChanged -= BrickManagerHandleLevelStateChanged;
+        LevelStatus.Instance.OnStateChanged -= UIManagerHandleLevelStateChanged;
 
     }
 

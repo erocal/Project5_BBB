@@ -23,6 +23,13 @@ public class BallManager : MonoBehaviour
 
     }
 
+    private void OnEnable()
+    {
+
+        LevelCounter.Instance?.AddBall();
+
+    }
+
     private void FixedUpdate()
     {
         if (!isLaunched) return;
@@ -94,5 +101,7 @@ public class BallManager : MonoBehaviour
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+
+        rb.Sleep();
     }
 }

@@ -14,12 +14,50 @@ public class SplitBallManager : EnvironmentObject
 
     private float cooldownTimer = 0f;
 
+    private void OnEnable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged += SplitBallManagerHandleLevelStateChanged;
+
+    }
+
     // Update is called once per frame
     void FixedUpdate()
     {
 
         cooldownTimer += Time.fixedDeltaTime;
 
+    }
+
+    private void SplitBallManagerHandleLevelStateChanged(LevelStatus.LevelState state)
+    {
+        switch (state)
+        {
+            case LevelStatus.LevelState.Loading:
+
+                break;
+
+            case LevelStatus.LevelState.Ready:
+
+                break;
+
+            case LevelStatus.LevelState.Playing:
+
+                break;
+
+            case LevelStatus.LevelState.Cleared:
+
+                break;
+
+            case LevelStatus.LevelState.Failed:
+
+                this.gameObject.Release();
+
+                break;
+        }
     }
 
     protected override void OnHit(GameObject hitObject)
@@ -78,4 +116,15 @@ public class SplitBallManager : EnvironmentObject
         ball.GetComponent<BallManager>().Launch(direction, speed);
 
     }
+
+    private void OnDisable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged -= SplitBallManagerHandleLevelStateChanged;
+
+    }
+
 }
