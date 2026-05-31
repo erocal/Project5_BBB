@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class HologramLevelMirror : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class HologramLevelMirror : MonoBehaviour
     [Tooltip("若來源物件大小不同，是否讓 Hologram 代理物件反映來源物件的大概比例。")]
     [SerializeField] private bool syncApproximateScale = false;
 
+    [Header("Hologram Object")]
+    [SerializeField] private GameObject hologramPlane;
+    [SerializeField] private GameObject hologramProjection;
+
     private Transform contentRoot;
 
     private readonly Dictionary<Transform, GameObject> levelProxies = new();
@@ -37,6 +42,16 @@ public class HologramLevelMirror : MonoBehaviour
     private void Awake()
     {
         CreateContentRootIfNeeded();
+    }
+
+    private void OnEnable()
+    {
+
+        if (VRController.Instance.LeftHandActivateAction != null)
+        {
+            VRController.Instance.LeftHandActivateAction.action.Enable();
+            VRController.Instance.LeftHandActivateAction.action.performed += HologramLevelMirrorOnLeftHandActivatePerformed;
+        }
     }
 
     private void LateUpdate()
@@ -63,11 +78,27 @@ public class HologramLevelMirror : MonoBehaviour
         if (contentRoot != null) return;
 
         GameObject content = new GameObject("Hologram Content");
+        hologramPlane = content;
         contentRoot = content.transform;
         contentRoot.SetParent(transform, false);
         contentRoot.localPosition = Vector3.zero;
         contentRoot.localRotation = Quaternion.identity;
         contentRoot.localScale = Vector3.one * hologramScale;
+    }
+
+    private void HologramLevelMirrorOnLeftHandActivatePerformed(InputAction.CallbackContext context)
+    {
+
+        SetHologramActive();
+
+    }
+
+    private void SetHologramActive()
+    {
+
+        hologramPlane.SetActive(!hologramPlane.activeInHierarchy);
+        hologramProjection.SetActive(!hologramProjection.activeInHierarchy);
+
     }
 
     private void SyncGroup(
@@ -263,4 +294,15 @@ public class HologramLevelMirror : MonoBehaviour
 
         proxies.Clear();
     }
+
+    private void OnDisable()
+    {
+
+        if (VRController.Instance.LeftHandActivateAction != null)
+        {
+            VRController.Instance.LeftHandActivateAction.action.performed -= HologramLevelMirrorOnLeftHandActivatePerformed;
+            VRController.Instance.LeftHandActivateAction.action.Disable();
+        }
+    }
+
 }

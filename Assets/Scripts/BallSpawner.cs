@@ -1,6 +1,7 @@
 using System;
 using ToolBox.Pools;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static LevelStatus;
 
 public class BallSpawner : MonoBehaviour
@@ -20,6 +21,12 @@ public class BallSpawner : MonoBehaviour
     [Header("球生成父物件")]
     [Tooltip("生成出來的球都會放到這個 Transform 底下")]
     [SerializeField] private Transform parentTransform;
+
+    [Header("Launch Settings")]
+    [SerializeField] private float launchSpeed = 12f;
+
+    [Tooltip("水平前方左右隨機角度範圍。例如 60 代表 -60 到 +60 度。")]
+    [SerializeField] private float randomHorizontalAngleRange = 60f;
 
     private void Awake()
     {
@@ -50,6 +57,15 @@ public class BallSpawner : MonoBehaviour
             return;
 
         LevelStatus.Instance.OnStateChanged += BallSpawnerHandleLevelStateChanged;
+
+        if(VRController.Instance == null)
+            return ;
+
+        if (VRController.Instance.RightHandActivateAction != null)
+        {
+            VRController.Instance.RightHandActivateAction.action.Enable();
+            VRController.Instance.RightHandActivateAction.action.performed += BallSpawnerOnRightHandActivatePerformed;
+        }
 
     }
 
@@ -87,6 +103,53 @@ public class BallSpawner : MonoBehaviour
         return curBall;
     }
 
+    private void BallSpawnerOnRightHandActivatePerformed(InputAction.CallbackContext context)
+    {
+        LaunchCurrentBall();
+    }
+
+    public void LaunchCurrentBall()
+    {
+
+        if (curBall == null)
+        {
+            Debug.LogWarning("場上目前沒有球，請先按 Grip / Select 生成球。");
+            return;
+        }
+
+        Vector3 launchDirection = GetRandomHorizontalForwardDirection();
+
+
+        BallSpawner.Instance.CurBall.GetComponent<BallManager>().Launch(launchDirection, launchSpeed);
+
+        if (LevelStatus.Instance != null)
+            LevelStatus.Instance.SetState(LevelStatus.LevelState.Playing);
+
+    }
+
+    private Vector3 GetRandomHorizontalForwardDirection()
+    {
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+
+        if (forward.sqrMagnitude <= 0.001f)
+        {
+            forward = Vector3.forward;
+        }
+
+        forward.Normalize();
+
+        float randomAngle = UnityEngine.Random.Range(
+            -randomHorizontalAngleRange,
+            randomHorizontalAngleRange
+        );
+
+        Vector3 randomDirection =
+            Quaternion.AngleAxis(randomAngle, Vector3.up) * forward;
+
+        return randomDirection.normalized;
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
@@ -103,6 +166,12 @@ public class BallSpawner : MonoBehaviour
             return;
 
         LevelStatus.Instance.OnStateChanged -= BallSpawnerHandleLevelStateChanged;
+
+        if (VRController.Instance.RightHandActivateAction != null)
+        {
+            VRController.Instance.RightHandActivateAction.action.performed -= BallSpawnerOnRightHandActivatePerformed;
+            VRController.Instance.RightHandActivateAction.action.Disable();
+        }
 
     }
 
