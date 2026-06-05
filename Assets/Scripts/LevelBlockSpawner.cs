@@ -26,11 +26,12 @@ public class LevelBlockSpawner : MonoBehaviour
     [SerializeField] private Ease dropEase = Ease.OutCubic;
 
     private Tween dropTween;
+    private int curLevelid = 1;
 
     private void Start()
     {
 
-        LoadCurrentLevel(1);
+        LoadCurrentLevel(curLevelid);
     }
 
     private void OnEnable()
@@ -48,7 +49,7 @@ public class LevelBlockSpawner : MonoBehaviour
         switch (state)
         {
             case LevelStatus.LevelState.Loading:
-                LoadCurrentLevel(1);
+                LoadCurrentLevel(curLevelid);
                 break;
 
             case LevelStatus.LevelState.Ready:
@@ -60,13 +61,23 @@ public class LevelBlockSpawner : MonoBehaviour
                 break;
 
             case LevelStatus.LevelState.Cleared:
-                
+
+                LevelCounter.Instance.ResetBallCount();
+                LevelCounter.Instance.ResetBrickCount();
+                curLevelid++;
+
+                DOVirtual.DelayedCall(2f, () =>
+                {
+                    LevelStatus.Instance.SetState(LevelStatus.LevelState.Loading);
+                });
+
                 break;
 
             case LevelStatus.LevelState.Failed:
 
                 LevelCounter.Instance.ResetBallCount();
                 LevelCounter.Instance.ResetBrickCount();
+                curLevelid = 1;
 
                 break;
         }
@@ -76,6 +87,9 @@ public class LevelBlockSpawner : MonoBehaviour
     {
 
         LevelIndexItem levelItem = allLevel.FirstOrDefault(fd => fd.id == GetLevelId(targetLevelId));
+
+        if (levelItem.level == null) levelItem = allLevel.FirstOrDefault(fd => fd.id == GetLevelId(1));
+
 
         if (levelItem.level == null)
         {

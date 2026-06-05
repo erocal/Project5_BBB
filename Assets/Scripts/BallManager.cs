@@ -1,3 +1,4 @@
+using ToolBox.Pools;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -28,6 +29,11 @@ public class BallManager : MonoBehaviour
 
         LevelCounter.Instance?.AddBall();
 
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged += BallManagerHandleLevelStateChanged;
+
     }
 
     private void FixedUpdate()
@@ -47,6 +53,40 @@ public class BallManager : MonoBehaviour
         else if (currentSpeed > maxSpeed)
         {
             rb.velocity = currentDirection * maxSpeed;
+        }
+    }
+
+    private void BallManagerHandleLevelStateChanged(LevelStatus.LevelState state)
+    {
+        switch (state)
+        {
+            case LevelStatus.LevelState.Loading:
+                
+                break;
+
+            case LevelStatus.LevelState.Ready:
+
+                break;
+
+            case LevelStatus.LevelState.Playing:
+
+                break;
+
+            case LevelStatus.LevelState.Cleared:
+
+                this.gameObject.Release();
+
+                LevelCounter.Instance.RemoveBall();
+
+                break;
+
+            case LevelStatus.LevelState.Failed:
+
+                this.gameObject.Release();
+
+                LevelCounter.Instance.RemoveBall();
+
+                break;
         }
     }
 
@@ -104,4 +144,15 @@ public class BallManager : MonoBehaviour
 
         rb.Sleep();
     }
+
+    private void OnDisable()
+    {
+
+        if (LevelStatus.Instance == null)
+            return;
+
+        LevelStatus.Instance.OnStateChanged -= BallManagerHandleLevelStateChanged;
+
+    }
+
 }
